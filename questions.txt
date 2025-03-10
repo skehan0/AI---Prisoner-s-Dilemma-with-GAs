@@ -1,0 +1,17 @@
+In the first part where you are asked to evolve strategies against a fixed set of strategies
+(or sets of strategies).
+
+If you consider representing your strategies as a genotype of length 3
+(what to do on first move, what to do following an opponent's cooperation, what to do following an opponent's defection),
+we have a strategy space of size 8 (2^3). Any reasonably sized population is likely to find the fittest strategy in
+the 1st generation hence negating the need for evolution.
+
+Means to expand the space to show the evolution:
+
+i) Rather than a choosing a binary alphabet, we could have real values indicating the probabilities of cooperating.
+Mutation and crossover would have to be modified.
+
+ii) Rather than considering a memory of length one, you could increase the memory length - for example, is a memory of 2 was used,
+we would have a genotype of length 5 ( and hence a strategy space of 2^5). This would be what to do on the
+first move, what to do following CC, CD, DC, DD by the opponent. This can be generalised. One could also
+include one's own moves too in the memory condition
