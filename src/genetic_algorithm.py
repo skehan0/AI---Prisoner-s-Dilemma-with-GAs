@@ -2,8 +2,8 @@ import random
 from strategies import AlwaysDefect, AlwaysCooperate, TitForTat, RandomStrategy
 
 # Variables
-population_size = 50
-tournament_size = 5
+population_size = 100
+tournament_size = 2
 genotype_length = 3
 generations = 100
 mutation_rate = 0.05
@@ -69,7 +69,7 @@ def crossover(parent1, parent2):
     point = random.randint(1, genotype_length - 1)
     return parent1[:point] + parent2[point:], parent2[:point] + parent1[point:]
 
-def mutate(individual):
+def mutate(individual, mutation_rate=1):
     """Mutate an individual with a small probability."""
     if random.random() < mutation_rate:
         index = random.randint(0, len(individual) - 1)
