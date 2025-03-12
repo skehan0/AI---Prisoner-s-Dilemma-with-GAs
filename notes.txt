@@ -1,0 +1,7 @@
+
+Game: Any set of circumstances that has a result dependent on the actions of two or more decision-makers (players).
+Players: A strategic decision-maker within the context of the game.
+Strategy: A complete plan of action a player will take given the set of circumstances that might arise within the game.
+Payoff: The payout a player receives from arriving at a particular outcome. The payout can be in any quantifiable form, from dollars to utility.
+Information set: The information available at a given point in the game. The term "information set" is most usually applied when the game has a sequential component.
+Equilibrium: The point in a game where both players have made their decisions and an outcome is reached.
