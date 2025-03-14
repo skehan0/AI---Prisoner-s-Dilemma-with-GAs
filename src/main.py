@@ -1,6 +1,6 @@
 from genetic_algorithm import evolution
 from src.strategies import RandomStrategy, GrimTrigger, TitForTwoTats, Joss
-from strategies import AlwaysDefect, AlwaysCooperate, TitForTat
+from strategies import AlwaysDefect, AlwaysCooperate, TitForTat 
 import matplotlib.pyplot as plt
 
 if __name__ == "__main__":

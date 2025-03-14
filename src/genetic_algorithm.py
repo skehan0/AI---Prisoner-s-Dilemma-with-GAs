@@ -1,40 +1,11 @@
 import random
 import numpy as np
 from Prisoner import evaluate_fitness
-from strategies import AlwaysDefect, AlwaysCooperate, TitForTat, RandomStrategy, GrimTrigger, TitForTwoTats, Joss
+from strategies import AlwaysDefect, AlwaysCooperate, TitForTat, RandomStrategy, GrimTrigger, TitForTwoTats, Joss, EvolvedStrategy
 
-strategies = [AlwaysCooperate, AlwaysDefect, TitForTat, RandomStrategy, GrimTrigger, TitForTwoTats, Joss]
+strategies = [AlwaysCooperate, AlwaysDefect, TitForTat, RandomStrategy, GrimTrigger, TitForTwoTats, Joss, EvolvedStrategy]
 
-class EvolvedStrategy:
-    """
-    Memory-1 strategy represented by a 5-bit genotype:
-      - gene[0]: initial move (1 for 'C', 0 for 'D')
-      - gene[1]: response when previous round was (C, C)
-      - gene[2]: response when previous round was (C, D)
-      - gene[3]: response when previous round was (D, C)
-      - gene[4]: response when previous round was (D, D)
-    """
-    def __init__(self, genotype=None):
-        if genotype is None:
-            # Initialize with 5 random bits
-            self.genotype = [random.choice([0, 1]) for _ in range(5)]
-        else:
-            self.genotype = genotype
-
-    def move(self, round_num, my_history, opp_history):
-        if round_num == 0:
-            return 'C' if self.genotype[0] == 1 else 'D'
-        last_round = (my_history[-1], opp_history[-1])
-        if last_round == ('C', 'C'):
-            return 'C' if self.genotype[1] == 1 else 'D'
-        elif last_round == ('C', 'D'):
-            return 'C' if self.genotype[2] == 1 else 'D'
-        elif last_round == ('D', 'C'):
-            return 'C' if self.genotype[3] == 1 else 'D'
-        else:  # ('D', 'D')
-            return 'C' if self.genotype[4] == 1 else 'D'
-
-def tournament_selection(population, fitnesses, tournament_size=3):
+def tournament_selection(population, fitnesses, tournament_size=6):
     """
     Perform tournament selection by choosing 'tournament_size' random individuals,
     then returning the one with the highest fitness.
@@ -64,7 +35,7 @@ def mutate(individual, mutation_rate=0.05):
     return EvolvedStrategy(new_genotype)
 
 def evolution(fixed_strategies, generations=100, population_size=100, rounds=100,
-              tournament_size=12, crossover_rate=0.7, mutation_rate=0.05, elitism=True):
+              tournament_size=6, crossover_rate=0.8, mutation_rate=0.02, elitism=True):
     """
     Run the genetic algorithm to evolve strategies against fixed opponents.
     Returns the best evolved strategy along with fitness history.
@@ -87,10 +58,10 @@ def evolution(fixed_strategies, generations=100, population_size=100, rounds=100
         new_population = []
 
         # Elitism: Carry over the best individual to the next generation
-        # if elitism:
-        #     best_index = np.argmax(fitnesses)
-        #     best_individual = population[best_index]
-        #     new_population.append(best_individual)
+        if elitism:
+            best_index = np.argmax(fitnesses)
+            best_individual = population[best_index]
+            new_population.append(best_individual)
 
         while len(new_population) < population_size:
             parent1 = tournament_selection(population, fitnesses, tournament_size)
