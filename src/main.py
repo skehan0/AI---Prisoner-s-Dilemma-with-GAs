@@ -10,7 +10,7 @@ if __name__ == "__main__":
     ROUNDS_PER_MATCH = 100
     TOURNAMENT_SIZE = 6
     CROSSOVER_RATE = 0.8
-    MUTATION_RATE = 0.05
+    MUTATION_RATE = 0.02
     
     # Define fixed strategies
     FIXED_STRATEGIES = [AlwaysCooperate(), AlwaysDefect(), TitForTat(), RandomStrategy(), GrimTrigger(), TitForTwoTats(), Joss()]

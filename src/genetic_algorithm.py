@@ -64,7 +64,7 @@ def mutate(individual, mutation_rate=0.05):
     return EvolvedStrategy(new_genotype)
 
 def evolution(fixed_strategies, generations=100, population_size=100, rounds=100,
-              tournament_size=12, crossover_rate=0.7, mutation_rate=0.05):
+              tournament_size=12, crossover_rate=0.7, mutation_rate=0.05, elitism=True):
     """
     Run the genetic algorithm to evolve strategies against fixed opponents.
     Returns the best evolved strategy along with fitness history.
@@ -85,6 +85,13 @@ def evolution(fixed_strategies, generations=100, population_size=100, rounds=100
             print(f"Generation {gen}: Best Fitness = {best_fitness}, Average Fitness = {avg_fitness:.2f}")
 
         new_population = []
+
+        # Elitism: Carry over the best individual to the next generation
+        # if elitism:
+        #     best_index = np.argmax(fitnesses)
+        #     best_individual = population[best_index]
+        #     new_population.append(best_individual)
+
         while len(new_population) < population_size:
             parent1 = tournament_selection(population, fitnesses, tournament_size)
             parent2 = tournament_selection(population, fitnesses, tournament_size)
