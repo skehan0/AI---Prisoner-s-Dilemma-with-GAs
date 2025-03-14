@@ -1,86 +1,127 @@
 import random
-from Prisoner import Prisoner
 
-class Strategy():
-
-    def perform_move(individual, previous_moves):
-        return individual.play(previous_moves)
-
-    def count_score(move1, move2):
-        if move1 == 0 and move2 == 0:
-            return (3, 3)  # Both cooperate
-        elif move1 == 0 and move2 == 1:
-            return (0, 5)  # First cooperates, second defects
-        elif move1 == 1 and move2 == 0:
-            return (5, 0)  # First defects, second cooperates
-        else:
-            return (1, 1)  # Both defect
-
-class AlwaysCooperate(Prisoner):
-    """Always cooperates."""
-    def play(self, history=None):
-        return 0  # Always cooperate
-
-class AlwaysDefect(Prisoner):
-    """Always defects."""
-    def play(self, history=None):
-        return 1  # Always defect
-
-class TitForTat(Prisoner):
-    """Always mimics the opponent's last move."""
+class AlwaysCooperate:
     def __init__(self):
-        super().__init__()
-        self.last_move = 0  # Assume cooperation in the first round
+        self.name = "Always Cooperate"
+        
+    def reset(self):
+        pass
+    
+    def move(self, round_num, my_history, opp_history):
+        return 'C'
 
-    def play(self, history):
-        if history:
-            self.last_move = history[-1]
-        return self.last_move
+class AlwaysDefect:
+    def __init__(self):
+        self.name = "Always Defect"
+        
+    def reset(self):
+        pass
+    
+    def move(self, round_num, my_history, opp_history):
+        return 'D'
 
-    def process_results(self, my_strategy, other_strategy):
-        self.last_move = other_strategy
+class TitForTat:
+    def __init__(self):
+        self.name = "Tit-for-Tat"
+        
+    def reset(self):
+        pass
+    
+    def move(self, round_num, my_history, opp_history):
+        if round_num == 0:
+            return 'C'
+        return opp_history[-1]
 
-class RandomStrategy(Prisoner):
-    """Randomly chooses to cooperate or defect."""
-    def play(self, history=None):
-        move = random.choice([0, 1])
-        return move
+class GrimTrigger:
+    def __init__(self):
+        self.name = "Grim Trigger"
+        self.triggered = False
+        
+    def reset(self):
+        self.triggered = False
+        
+    def move(self, round_num, my_history, opp_history):
+        if round_num == 0:
+            return 'C'
+        if 'D' in opp_history:
+            self.triggered = True
+        return 'D' if self.triggered else 'C'
 
-# class GrimTrigger(Prisoner):
-#     """Cooperates until the opponent defects, then defects forever."""
-#     def __init__(self):
-#         super().__init__()
-#         self.defected = False
-#
-#     def play(self, history):
-#         if history and 1 in history:
-#             self.defected = True
-#         print(f"GrimTrigger plays: {1 if self.defected else 0}")
-#         return 1 if self.defected else 0
-#
-#     def process_results(self, my_strategy, other_strategy):
-#         if other_strategy == 1:
-#             self.defected = True  # Once defected, always defect
+class RandomStrategy:
+    def __init__(self):
+        self.name = "Random Strategy"
+        
+    def reset(self):
+        pass
+    
+    def move(self, round_num, my_history, opp_history):
+        return random.choice(['C', 'D'])
 
-def play_round(strategy1, strategy2, history1, history2):
-    move1 = strategy1.play(history2)
-    move2 = strategy2.play(history1)
-    strategy1.process_results(move1, move2)
-    strategy2.process_results(move2, move1)
+class TitForTwoTats:
+    def __init__(self):
+        self.name = "Tit-for-Two-Tats"
 
-    history1.append(move1)
-    history2.append(move2)
+    def reset(self):
+        pass
 
-    print(f"Round Result: {strategy1.__class__.__name__} plays {move1}, {strategy2.__class__.__name__} plays {move2}")
-    return move1, move2
+    def move(self, round_num, my_history, opp_history):
+        if round_num < 2:
+            return 'C'  # Start by cooperating
+        if opp_history[-1] == 'D' and opp_history[-2] == 'D':  # Only defect if opponent defected twice
+            return 'D'
+        return 'C'
 
-def test_strategies():
-    s1 = TitForTat()
-    s2 = RandomStrategy()
-    history1, history2 = [], []
+class Joss:
+    def __init__(self, defect_chance=0.1):
+        self.name = "Joss"
+        self.defect_chance = defect_chance
 
-    for round_num in range(5):
-        m1, m2 = play_round(s1, s2, history1, history2)
+    def reset(self):
+        pass
 
-if __name__ == "__main__":
-    test_strategies()
+    def move(self, round_num, my_history, opp_history):
+        if round_num == 0:
+            return 'C'
+        if random.random() < self.defect_chance:
+            return 'D'  # Random defection
+        return opp_history[-1]  # Otherwise, Tit-for-Tat
+
+class EvolvedStrategy:
+    """
+    Memory-1 strategy represented by a 5-bit genotype:
+      - gene[0]: initial move (1 for 'C', 0 for 'D')
+      - gene[1]: response when previous round was (C, C)
+      - gene[2]: response when previous round was (C, D)
+      - gene[3]: response when previous round was (D, C)
+      - gene[4]: response when previous round was (D, D)
+    """
+    def __init__(self, genotype=None):
+        if genotype is None:
+            # Initialize with 5 random bits
+            self.genotype = [random.choice([0, 1]) for _ in range(5)]
+        else:
+            self.genotype = genotype[:]
+        self.name = "EvolvedStrategy"
+    
+    def reset(self):
+        pass  # Memory-1 strategies do not maintain additional state
+    
+    def move(self, round_num, my_history, opp_history):
+        if round_num == 0:
+            return 'C' if self.genotype[0] == 1 else 'D'
+        my_last = my_history[-1]
+        opp_last = opp_history[-1]
+        if my_last == 'C' and opp_last == 'C':
+            index = 1
+        elif my_last == 'C' and opp_last == 'D':
+            index = 2
+        elif my_last == 'D' and opp_last == 'C':
+            index = 3
+        elif my_last == 'D' and opp_last == 'D':
+            index = 4
+        return 'C' if self.genotype[index] == 1 else 'D'
+    
+    def __str__(self):
+        # Represent the genotype as a sequence of moves (C or D)
+        mapping = lambda bit: 'C' if bit == 1 else 'D'
+        return "".join(mapping(bit) for bit in self.genotype)
