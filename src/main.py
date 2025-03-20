@@ -2,7 +2,7 @@ from genetic_algorithm import evolution
 from strategies import RandomStrategy, GrimTrigger, TitForTwoTats, Joss
 from strategies import AlwaysDefect, AlwaysCooperate, TitForTat
 import matplotlib.pyplot as plt
-from Prisoner import evaluate_fitness
+from Prisoner import evaluate_fitness, evaluate_fitness_coevolution
 
 if __name__ == "__main__":
     # Parameters for the GA
@@ -12,7 +12,7 @@ if __name__ == "__main__":
     TOURNAMENT_SIZE = 6
     CROSSOVER_RATE = 0.8
     MUTATION_RATE = 0.02
-    NOISE = 0.1 # Probability of flipping a player's move
+    # NOISE = 0.1 # Probability of flipping a player's move
 
     # Define fixed strategies
     FIXED_STRATEGIES = [
@@ -34,7 +34,7 @@ if __name__ == "__main__":
         tournament_size=TOURNAMENT_SIZE,
         crossover_rate=CROSSOVER_RATE,
         mutation_rate=MUTATION_RATE,
-        noise=NOISE
+        # noise=NOISE
     )
 
     # Print the best evolved strategy and its genotype
@@ -52,7 +52,7 @@ if __name__ == "__main__":
     # Evaluate performance against fixed strategies
     print("\nPerformance Against Fixed Strategies:")
     for strategy in FIXED_STRATEGIES:
-        score = evaluate_fitness(best_strategy, [strategy], ROUNDS_PER_MATCH)
+        score = evaluate_fitness_coevolution(best_strategy, [strategy], ROUNDS_PER_MATCH)
         print(f"Against {strategy.name}: {score}")
 
     # Plot fitness progression over generations

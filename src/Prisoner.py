@@ -57,3 +57,21 @@ def evaluate_fitness(individual, fixed_strategies, rounds=100, noise=0.1):
         score, _ = simulate_match(individual, opponent, rounds, noise)
         total_score += score
     return total_score
+
+
+# Co-Evolutionary Approach
+def evaluate_fitness_coevolution(individual, population, rounds=100, noise=0.1):
+    """
+    Evaluate the fitness of an individual by playing matches against other individuals in the population.
+    :param individual: The strategy to evaluate.
+    :param population: The population of strategies to compete against.
+    :param rounds: Number of rounds per match.
+    :param noise: Probability of flipping a player's move.
+    :return: Total fitness score of the individual.
+    """
+    total_score = 0
+    for opponent in population:
+        if opponent != individual:  # Avoid self-play
+            score, _ = simulate_match(individual, opponent, rounds, noise)
+            total_score += score
+    return total_score

@@ -1,6 +1,6 @@
 import random
 import numpy as np
-from Prisoner import evaluate_fitness
+from Prisoner import evaluate_fitness, evaluate_fitness_coevolution
 from strategies import AlwaysDefect, AlwaysCooperate, TitForTat, RandomStrategy, GrimTrigger, TitForTwoTats, Joss, EvolvedStrategy
 
 strategies = [AlwaysCooperate, AlwaysDefect, TitForTat, RandomStrategy, GrimTrigger, TitForTwoTats, Joss, EvolvedStrategy]
@@ -79,6 +79,58 @@ def evolution(fixed_strategies, generations=100, population_size=100, rounds=100
 
     # Final evaluation to obtain the best individual
     fitnesses = [evaluate_fitness(ind, fixed_strategies, rounds, noise) for ind in population]
+    best_index = np.argmax(fitnesses)
+    best_individual = population[best_index]
+    return best_individual, best_fitness_history, avg_fitness_history
+
+
+# Co-Evolutionary Approach
+def evolution_coevolution(population_size=100, generations=100, rounds=100,
+                          tournament_size=6, crossover_rate=0.8, mutation_rate=0.02, noise=0.1):
+    """
+    Run a co-evolutionary genetic algorithm where strategies compete against each other.
+    Returns the best evolved strategy along with fitness history.
+    """
+    # Initialize population with random evolved strategies
+    population = [EvolvedStrategy() for _ in range(population_size)]
+    best_fitness_history = []
+    avg_fitness_history = []
+
+    for gen in range(generations):
+        # Evaluate fitness by competing against other individuals in the population
+        fitnesses = [evaluate_fitness_coevolution(ind, population, rounds, noise) for ind in population]
+        best_fitness = max(fitnesses)
+        avg_fitness = sum(fitnesses) / len(fitnesses)
+        best_fitness_history.append(best_fitness)
+        avg_fitness_history.append(avg_fitness)
+
+        if gen % 10 == 0:
+            print(f"Generation {gen}: Best Fitness = {best_fitness}, Average Fitness = {avg_fitness:.2f}")
+
+        new_population = []
+
+        # Elitism: Carry over the best individual to the next generation
+        best_index = np.argmax(fitnesses)
+        best_individual = population[best_index]
+        new_population.append(best_individual)
+
+        # Generate new population through selection, crossover, and mutation
+        while len(new_population) < population_size:
+            parent1 = tournament_selection(population, fitnesses, tournament_size)
+            parent2 = tournament_selection(population, fitnesses, tournament_size)
+            if random.random() < crossover_rate:
+                child1, child2 = crossover(parent1, parent2)
+            else:
+                child1 = EvolvedStrategy(parent1.genotype)
+                child2 = EvolvedStrategy(parent2.genotype)
+            child1 = mutate(child1, mutation_rate)
+            child2 = mutate(child2, mutation_rate)
+            new_population.extend([child1, child2])
+
+        population = new_population[:population_size]
+
+    # Final evaluation to obtain the best individual
+    fitnesses = [evaluate_fitness_coevolution(ind, population, rounds, noise) for ind in population]
     best_index = np.argmax(fitnesses)
     best_individual = population[best_index]
     return best_individual, best_fitness_history, avg_fitness_history
