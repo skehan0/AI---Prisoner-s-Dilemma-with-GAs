@@ -12,6 +12,7 @@ if __name__ == "__main__":
     TOURNAMENT_SIZE = 6
     CROSSOVER_RATE = 0.8
     MUTATION_RATE = 0.02
+    NOISE = 0.1 # Probability of flipping a player's move
 
     # Define fixed strategies
     FIXED_STRATEGIES = [
@@ -32,7 +33,8 @@ if __name__ == "__main__":
         rounds=ROUNDS_PER_MATCH,
         tournament_size=TOURNAMENT_SIZE,
         crossover_rate=CROSSOVER_RATE,
-        mutation_rate=MUTATION_RATE
+        mutation_rate=MUTATION_RATE,
+        noise=NOISE
     )
 
     # Print the best evolved strategy and its genotype

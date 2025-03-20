@@ -24,7 +24,7 @@ def crossover(parent1, parent2):
     child2_genotype = parent2.genotype[:point] + parent1.genotype[point:]
     return EvolvedStrategy(child1_genotype), EvolvedStrategy(child2_genotype)
 
-def mutate(individual, mutation_rate=0.05):
+def mutate(individual, mutation_rate=0.02):
     """
     Mutate an individual's genotype by flipping each bit with probability 'mutation_rate'.
     """
@@ -35,9 +35,9 @@ def mutate(individual, mutation_rate=0.05):
     return EvolvedStrategy(new_genotype)
 
 def evolution(fixed_strategies, generations=100, population_size=100, rounds=100,
-              tournament_size=6, crossover_rate=0.8, mutation_rate=0.02, elitism=True):
+              tournament_size=6, crossover_rate=0.8, mutation_rate=0.02, elitism=True, noise=0.1):
     """
-    Run the genetic algorithm to evolve strategies against fixed opponents.
+    Run the genetic algorithm to evolve strategies against fixed opponents with noise.
     Returns the best evolved strategy along with fitness history.
     """
     # Initialize population with random evolved strategies
@@ -46,7 +46,7 @@ def evolution(fixed_strategies, generations=100, population_size=100, rounds=100
     avg_fitness_history = []
 
     for gen in range(generations):
-        fitnesses = [evaluate_fitness(ind, fixed_strategies, rounds) for ind in population]
+        fitnesses = [evaluate_fitness(ind, fixed_strategies, rounds, noise) for ind in population]
         best_fitness = max(fitnesses)
         avg_fitness = sum(fitnesses) / len(fitnesses)
         best_fitness_history.append(best_fitness)
@@ -74,11 +74,11 @@ def evolution(fixed_strategies, generations=100, population_size=100, rounds=100
             child1 = mutate(child1, mutation_rate)
             child2 = mutate(child2, mutation_rate)
             new_population.extend([child1, child2])
-        
+
         population = new_population[:population_size]
-    
+
     # Final evaluation to obtain the best individual
-    fitnesses = [evaluate_fitness(ind, fixed_strategies, rounds) for ind in population]
+    fitnesses = [evaluate_fitness(ind, fixed_strategies, rounds, noise) for ind in population]
     best_index = np.argmax(fitnesses)
     best_individual = population[best_index]
     return best_individual, best_fitness_history, avg_fitness_history
