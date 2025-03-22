@@ -8,7 +8,7 @@ class AlwaysCooperate:
         pass
     
     def move(self, round_num, my_history, opp_history):
-        return 'C'
+        return 'C' # Always cooperates
 
 class AlwaysDefect:
     def __init__(self):
@@ -18,7 +18,7 @@ class AlwaysDefect:
         pass
     
     def move(self, round_num, my_history, opp_history):
-        return 'D'
+        return 'D' # Always Defects
 
 class TitForTat:
     def __init__(self):
@@ -29,8 +29,8 @@ class TitForTat:
     
     def move(self, round_num, my_history, opp_history):
         if round_num == 0:
-            return 'C'
-        return opp_history[-1]
+            return 'C' # Starts by cooperating
+        return opp_history[-1] # Copies the oppenents last move
 
 class GrimTrigger:
     def __init__(self):
@@ -42,9 +42,9 @@ class GrimTrigger:
         
     def move(self, round_num, my_history, opp_history):
         if round_num == 0:
-            return 'C'
+            return 'C' # Starts by cooperating
         if 'D' in opp_history:
-            self.triggered = True
+            self.triggered = True # Defects permanently after opponent defects
         return 'D' if self.triggered else 'C'
 
 class RandomStrategy:
@@ -55,7 +55,7 @@ class RandomStrategy:
         pass
     
     def move(self, round_num, my_history, opp_history):
-        return random.choice(['C', 'D'])
+        return random.choice(['C', 'D']) # Randomly cooperates or defects
 
 class TitForTwoTats:
     def __init__(self):
@@ -81,7 +81,7 @@ class Joss:
 
     def move(self, round_num, my_history, opp_history):
         if round_num == 0:
-            return 'C'
+            return 'C' # Starts by cooperating
         if random.random() < self.defect_chance:
             return 'D'  # Random defection
         return opp_history[-1]  # Otherwise, Tit-for-Tat
